@@ -1,0 +1,77 @@
+<%- include('../../partials/header.ejs') %>
+
+
+<body>
+
+  <%- include('../../partials/navbar.ejs') %>
+
+  <div class="container">
+    <br>
+    <div class="card">
+
+      <div class="card-header">
+        <h2>Editar Artigo</h2>
+      </div>
+
+      <div class="card-body">
+
+        <form action="/articles/update" method="post">
+          <input type="hidden" value="<%= article.id %>" name="id">
+          <input type="text" placeholder="Defina o título do artigo" class="form-control" name="title" value="<%= article.title %>">
+          <br>
+
+          <textarea name="body" class="form-control" id="article" placeholder="Escreva o artigo aqui!"></textarea>
+          <br>
+          <label for="categorias"> Selecione uma categoria para o seu artigo</label>
+          <select name="categoria" id="categorias" class="form-control">
+
+            <% categorias.forEach(categoria => { %>
+
+
+            <% if (categoria.id == article.categoryId) { %>
+            <option value="<%= categoria.id %>" selected><%= categoria.title %></option>
+            <% } else { %>
+            <option value="<%= categoria.id %>"><%= categoria.title %></option>
+            <% } %>
+
+
+
+
+            <% }) %>
+
+          </select>
+
+          <br>
+          <button type="submit" class="btn btn-primary">Atualizar</button>
+
+        </form>
+      </div>
+    </div>
+
+
+
+  </div>
+
+  <div id="content" style="display: none;">
+    <%- article.body %>
+  </div>
+
+
+</body>
+
+
+
+<%- include('../../partials/footer.ejs') %>
+
+<script src="/tinymce/tinymce.min.js"></script>
+<script>
+  tinymce.init({
+    selector: '#article',
+    plugins: 'preview  searchreplace autolink autosave save directionality visualchars fullscreen image link media table pagebreak nonbreaking anchor insertdatetime advlist lists charmap quickbars emoticons toolbar',
+    height: 400,
+    language: 'pt_BR',
+    init_instance_callback: () => {
+      tinymce.activeEditor.setContent(document.getElementById('content').innerHTML);
+    }
+  })
+</script>

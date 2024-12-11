@@ -55,4 +55,93 @@ router.post("/articles/delete", (req, res) => {
   }
 });
 
+router.get("/admin/articles/edit/:id", (req, res) => {
+  const id = req.params.id;
+
+  Article.findByPk(id)
+    .then((article) => {
+      if (article != undefined) {
+        Category.findAll().then((categorias) => {
+          res.render("admin/articles/edit", {
+            article: article,
+            categorias: categorias,
+          });
+        });
+      } else {
+        res.redirect("/");
+      }
+    })
+    .catch((err) => {
+      res.redirect("/");
+    });
+});
+
+router.post("/articles/update", (req, res) => {
+  const id = req.body.id;
+  const title = req.body.title;
+  const body = req.body.body;
+  const categoria = req.body.categoria;
+
+  if (id != undefined) {
+    if (!isNaN(id)) {
+      Article.update(
+        {
+          title: title,
+          body: body,
+          categoryId: categoria,
+          slug: slugify(title).toLowerCase(),
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      ).then(() => {
+        res.redirect("/admin/articles");
+      });
+    } else {
+      //Não é um numero
+      res.redirect("/admin/articles");
+    }
+  } else {
+    //NUL
+    res.redirect("/admin/articles");
+  }
+});
+
+router.get("/articles/page/:num", (req, res) => {
+  const page = req.params.num;
+  var offset = 0;
+
+  if (isNaN(page) || page == 0 || page == 1) {
+    offset = 0;
+  } else {
+    offset = (parseInt(page) - 1) * 4;
+  }
+
+  Article.findAndCountAll({
+    limit: 4,
+    offset: offset,
+    order: [["id", "DESC"]],
+  }).then((articles) => {
+    var next;
+    if (offset + 4 >= articles.count) {
+      next = false;
+    } else {
+      next = true;
+    }
+    var result = {
+      page: parseInt(page),
+      next: next,
+      articles: articles,
+    };
+    Category.findAll().then((categorias) => {
+      res.render("admin/articles/page", {
+        result: result,
+        categorias: categorias,
+      });
+    });
+  });
+});
+
 module.exports = router;

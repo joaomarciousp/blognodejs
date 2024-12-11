@@ -38,7 +38,7 @@ app.use("/", ArticlesController);
 
 //rota principal
 app.get("/", (req, res) => {
-  Article.findAll({ order: [["id", "DESC"]] }).then((articles) => {
+  Article.findAll({ order: [["id", "DESC"]], limit: 4 }).then((articles) => {
     Category.findAll().then((categorias) => {
       res.render("index", { articles: articles, categorias: categorias });
     });
