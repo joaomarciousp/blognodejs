@@ -10,6 +10,7 @@ const ArticlesController = require("./articles/ArticlesController");
 
 const Category = require("./categories/Category");
 const Article = require("./articles/Article");
+const { where } = require("sequelize");
 
 //view engine
 app.set("view engine", "ejs");
@@ -37,7 +38,55 @@ app.use("/", ArticlesController);
 
 //rota principal
 app.get("/", (req, res) => {
-  res.render("index");
+  Article.findAll({ order: [["id", "DESC"]] }).then((articles) => {
+    Category.findAll().then((categorias) => {
+      res.render("index", { articles: articles, categorias: categorias });
+    });
+  });
+});
+
+//rota que exibe os artigos
+app.get("/:slug", (req, res) => {
+  const slug = req.params.slug;
+  Article.findOne({
+    where: {
+      slug: slug,
+    },
+  })
+    .then((article) => {
+      if (article != undefined) {
+        Category.findAll().then((categorias) => {
+          res.render("article", { article: article, categorias: categorias });
+        });
+      } else {
+        res.redirect("/");
+      }
+    })
+    .catch((err) => {
+      res.redirect("/");
+    });
+});
+
+app.get("/category/:slug", (req, res) => {
+  const slug = req.params.slug;
+  Category.findOne({
+    where: {
+      slug: slug,
+    },
+    include: [{ model: Article }],
+  }).then((categoria) => {
+    if (categoria != undefined) {
+      //achou uma categoria
+      Category.findAll().then((categorias) => {
+        res.render("index", {
+          articles: categoria.articles,
+          categorias: categorias,
+        });
+      });
+    } else {
+      res.redirect("/");
+    }
+  });
 });
 
 //abrindo servidor

@@ -9,6 +9,7 @@ const conn = new Sequelize(
   {
     host: "localhost",
     dialect: "mysql",
+    timezone: "-03:00",
   }
 );
 
