@@ -8,6 +8,7 @@ const conn = require("./database/db");
 const CategoriesController = require("./categories/CategoriesController");
 const ArticlesController = require("./articles/ArticlesController");
 const UserController = require("./user/UserController");
+const session = require("express-session");
 
 const Category = require("./categories/Category");
 const Article = require("./articles/Article");
@@ -15,6 +16,14 @@ const User = require("./user/User");
 
 //view engine
 app.set("view engine", "ejs");
+
+//session
+app.use(
+  session({
+    secret: "jmgr",
+    cookie: { maxAge: 30000 },
+  })
+);
 
 //static
 app.use(express.static("public"));
