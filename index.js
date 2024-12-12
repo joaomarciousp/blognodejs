@@ -7,10 +7,11 @@ const bodyParser = require("body-parser");
 const conn = require("./database/db");
 const CategoriesController = require("./categories/CategoriesController");
 const ArticlesController = require("./articles/ArticlesController");
+const UserController = require("./user/UserController");
 
 const Category = require("./categories/Category");
 const Article = require("./articles/Article");
-const { where } = require("sequelize");
+const User = require("./user/User");
 
 //view engine
 app.set("view engine", "ejs");
@@ -35,6 +36,7 @@ conn
 //rotas controllers
 app.use("/", CategoriesController);
 app.use("/", ArticlesController);
+app.use("/", UserController);
 
 //rota principal
 app.get("/", (req, res) => {
